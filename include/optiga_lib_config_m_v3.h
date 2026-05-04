@@ -76,7 +76,9 @@ extern "C" {
 /** @brief OPTIGA COMMS shielded connection feature.
  *         To disable the feature, undefine the macro
  */
+#if !defined(OPTIGA_COMMS_SHIELDED_CONNECTION)
 #define OPTIGA_COMMS_SHIELDED_CONNECTION
+#endif
 
 /** @brief Default reset protection level for OPTIGA CRYPT and UTIL APIs */
 #define OPTIGA_COMMS_DEFAULT_PROTECTION_LEVEL OPTIGA_COMMS_NO_PROTECTION
@@ -108,9 +110,13 @@ extern "C" {
  * Enable macro OPTIGA_LIB_ENABLE_CRYPT_LOGGING for Crypt Service layer logging     \n
  * Enable macro OPTIGA_LIB_ENABLE_CMD_LOGGING for Command layer logging     \n
  * Enable macro OPTIGA_LIB_ENABLE_COMMS_LOGGING for Communication layer logging     */
+#if !defined(OPTIGA_LIB_ENABLE_LOGGING)
 #define OPTIGA_LIB_ENABLE_LOGGING
+#endif
+
 /** @brief Enable macro OPTIGA_PAL_INIT_ENABLED for calling pal_init functionality */
 #define OPTIGA_PAL_INIT_ENABLED
+
 /// @cond
 #ifdef OPTIGA_LIB_ENABLE_LOGGING
 /** @brief Macro to enable logger for Util service */
