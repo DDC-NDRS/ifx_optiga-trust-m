@@ -20,14 +20,17 @@
 extern "C" {
 #endif
 
-#include "optiga_lib_types.h"
+#include "common/optiga_lib_types.h"
 
 /// PAL API execution is successful
 #define PAL_STATUS_SUCCESS (0x0000)
+
 /// PAL API execution failed
 #define PAL_STATUS_FAILURE (0x0001)
+
 /// PAL I2C is busy
 #define PAL_STATUS_I2C_BUSY (0x0002)
+
 /// PAL API execution with wrong input arguments provided
 #define PAL_STATUS_INVALID_INPUT (0x0004)
 

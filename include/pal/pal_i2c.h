@@ -20,23 +20,28 @@
 extern "C" {
 #endif
 
-#include "pal.h"
+#include "pal/pal.h"
 
 /// Event returned when I2C master completes execution
 #define PAL_I2C_EVENT_SUCCESS (0x0000)
+
 /// Event returned when I2C master operation fails
 #define PAL_I2C_EVENT_ERROR (0x0001)
+
 /// Event returned when lower level I2C bus is busy
 #define PAL_I2C_EVENT_BUSY (0x0002)
 
 /** @brief PAL I2C context structure */
 typedef struct pal_i2c {
     /// Pointer to I2C master platform specific context
-    void *p_i2c_hw_config;
+    void* p_i2c_hw_config;
+
     /// Pointer to store the callers context information
-    void *p_upper_layer_ctx;
+    void* p_upper_layer_ctx;
+
     /// Pointer to store the callers handler
-    void *upper_layer_event_handler;
+    void* upper_layer_event_handler;
+
     /// I2C slave address
     uint8_t slave_address;
 } pal_i2c_t;
@@ -55,8 +60,8 @@ typedef struct pal_i2c {
  *   - The implementation must handle the acquiring and releasing of the I2C bus before initializing the I2C master to
  *     avoid interrupting the ongoing slave I2C transactions using the same I2C master.
  *   - If the I2C bus is in busy state, the API must not initialize and return #PAL_STATUS_I2C_BUSY status.
- *   - Repeated initialization must be taken care with respect to the platform requirements. (Example: Multiple users/applications
- *     sharing the same I2C master resource)
+ *   - Repeated initialization must be taken care with respect to the platform requirements. (Example: Multiple
+ * users/applications sharing the same I2C master resource)
  *
  *
  * \pre
@@ -65,12 +70,12 @@ typedef struct pal_i2c {
  * \note
  * - None
  *
- * \param[in] p_i2c_context      Valid pointer to the PAL I2C context that should be initialized
+ * \param[in] ctx Valid pointer to the PAL I2C context that should be initialized
  *
  * \retval  #PAL_STATUS_SUCCESS  Returns when the I2C master init it successful
  * \retval  #PAL_STATUS_FAILURE  Returns when the I2C init fails.
  */
-LIBRARY_EXPORTS pal_status_t pal_i2c_init(const pal_i2c_t *p_i2c_context);
+LIBRARY_EXPORTS pal_status_t pal_i2c_init(pal_i2c_t const* ctx);
 
 /**
  * @brief Sets the I2C Master bitrate
@@ -82,8 +87,8 @@ LIBRARY_EXPORTS pal_status_t pal_i2c_init(const pal_i2c_t *p_i2c_context);
  * - Sets the bitrate of I2C master if the I2C bus is free, else it returns busy status #PAL_STATUS_I2C_BUSY<br>
  * - The bus is released after the setting the bitrate.<br>
  * - This API must take care of setting the bitrate to I2C master's maximum supported value.
- * - Eg. In XMC4800, the maximum supported bitrate is 400 KHz. If the supplied bitrate is greater than 400KHz, the API will
- *   set the I2C master's bitrate to 400KHz.
+ * - Eg. In XMC4800, the maximum supported bitrate is 400 KHz. If the supplied bitrate is greater than 400KHz, the API
+ * will set the I2C master's bitrate to 400KHz.
  * - If upper_layer_event_handler is initialized, the upper layer handler is invoked with the respective event
  *   status listed below.
  *   - #PAL_I2C_EVENT_BUSY when I2C bus in busy state
@@ -98,14 +103,14 @@ LIBRARY_EXPORTS pal_status_t pal_i2c_init(const pal_i2c_t *p_i2c_context);
  * \note
  * - None
  *
- * \param[in] p_i2c_context  Valid pointer to the PAL I2C context
- * \param[in] bitrate        Bitrate to be used by I2C master in KHz
+ * \param[in] ctx Valid pointer to the PAL I2C context
+ * \param[in] bitrate Bitrate to be used by I2C master in KHz
  *
  * \retval  #PAL_STATUS_SUCCESS  Returns when the setting of bitrate is successfully completed
  * \retval  #PAL_STATUS_FAILURE  Returns when the setting of bitrate fails.
  * \retval  #PAL_STATUS_I2C_BUSY Returns when the I2C bus is busy.
  */
-LIBRARY_EXPORTS pal_status_t pal_i2c_set_bitrate(const pal_i2c_t *p_i2c_context, uint16_t bitrate);
+LIBRARY_EXPORTS pal_status_t pal_i2c_set_bitrate(pal_i2c_t const* ctx, uint16_t bitrate);
 
 /**
  * @brief Writes on I2C bus.
@@ -132,18 +137,17 @@ LIBRARY_EXPORTS pal_status_t pal_i2c_set_bitrate(const pal_i2c_t *p_i2c_context,
  * \note
  *  - Otherwise the below implementation has to be updated to handle different bitrates based on the input context.<br>
  *  - The caller of this API must take care of the guard time based on the slave's requirement.<br>
- *  - The upper_layer_event_handler must be initialized in the p_i2c_context before invoking the API.<br>
+ *  - The upper_layer_event_handler must be initialized in the ctx before invoking the API.<br>
  *
- * \param[in] p_i2c_context  Valid pointer to the PAL I2C context #pal_i2c_t
- * \param[in] p_data         Pointer to the data to be written
- * \param[in] length         Length of the data to be written
+ * \param[in] ctx Valid pointer to the PAL I2C context #pal_i2c_t
+ * \param[in] du  Pointer to the data to be written
+ * \param[in] len Length of the data to be written
  *
  * \retval  #PAL_STATUS_SUCCESS  Returns when the I2C write is invoked successfully
  * \retval  #PAL_STATUS_FAILURE  Returns when the I2C write fails.
  * \retval  #PAL_STATUS_I2C_BUSY Returns when the I2C bus is busy.
  */
-LIBRARY_EXPORTS pal_status_t
-pal_i2c_write(const pal_i2c_t *p_i2c_context, uint8_t *p_data, uint16_t length);
+LIBRARY_EXPORTS pal_status_t pal_i2c_write(pal_i2c_t const* ctx, uint8_t* du, uint16_t len);
 
 /**
  * @brief Reads from I2C bus.
@@ -169,16 +173,15 @@ pal_i2c_write(const pal_i2c_t *p_i2c_context, uint8_t *p_data, uint16_t length);
  *  - Otherwise the below implementation has to be updated to handle different bitrates based on the input context.<br>
  *  - The caller of this API must take care of the guard time based on the slave's requirement.<br>
  *
- * \param[in]  p_i2c_context  pointer to the PAL I2C context #pal_i2c_t
- * \param[in]  p_data         Pointer to the data buffer to store the read data
- * \param[in]  length         Length of the data to be read
+ * \param[in] ctx pointer to the PAL I2C context #pal_i2c_t
+ * \param[in] du  Pointer to the data buffer to store the read data
+ * \param[in] len Length of the data to be read
  *
  * \retval  #PAL_STATUS_SUCCESS  Returns when the I2C read is invoked successfully
  * \retval  #PAL_STATUS_FAILURE  Returns when the I2C read fails.
  * \retval  #PAL_STATUS_I2C_BUSY Returns when the I2C bus is busy.
  */
-LIBRARY_EXPORTS pal_status_t
-pal_i2c_read(const pal_i2c_t *p_i2c_context, uint8_t *p_data, uint16_t length);
+LIBRARY_EXPORTS pal_status_t pal_i2c_read(pal_i2c_t const* ctx, uint8_t* du, uint16_t len);
 
 /**
  * @brief De-initializes the I2C master.
@@ -191,8 +194,8 @@ pal_i2c_read(const pal_i2c_t *p_i2c_context, uint8_t *p_data, uint16_t length);
  * - If the target platform does not demand explicit de-initialization of i2c master
  *   (Example: If the platform driver takes care of init after the reset), it would not be required to implement.<br>
  * - The implementation must take care the following scenarios depending upon the target platform selected.
- *   - The implementation must handle the acquiring and releasing of the I2C bus before de-initializing the I2C master to
- *     avoid interrupting the ongoing slave I2C transactions using the same I2C master.
+ *   - The implementation must handle the acquiring and releasing of the I2C bus before de-initializing the I2C master
+ * to avoid interrupting the ongoing slave I2C transactions using the same I2C master.
  *   - If the I2C bus is in busy state, the API must not de-initialize and return #PAL_STATUS_I2C_BUSY status.
  *     - This API must ensure that multiple users/applications sharing the same I2C master resource is not impacted.
  *
@@ -202,12 +205,12 @@ pal_i2c_read(const pal_i2c_t *p_i2c_context, uint8_t *p_data, uint16_t length);
  * \note
  * - None
  *
- * \param[in] p_i2c_context   Valid pointer to the PAL I2C context that should be de-initialized
+ * \param[in] ctx Valid pointer to the PAL I2C context that should be de-initialized
  *
  * \retval  #PAL_STATUS_SUCCESS  Returns when the I2C master de-init it successful
  * \retval  #PAL_STATUS_FAILURE  Returns when the I2C de-init fails.
  */
-LIBRARY_EXPORTS pal_status_t pal_i2c_deinit(const pal_i2c_t *p_i2c_context);
+LIBRARY_EXPORTS pal_status_t pal_i2c_deinit(pal_i2c_t const* ctx);
 
 #ifdef __cplusplus
 }

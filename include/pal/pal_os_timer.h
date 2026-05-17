@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#include "pal.h"
+#include "pal/pal.h"
 
 /**
  * \brief Gets tick count value in microseconds

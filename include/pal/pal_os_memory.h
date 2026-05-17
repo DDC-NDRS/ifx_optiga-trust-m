@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#include "pal.h"
+#include "pal/pal.h"
 
 /**
  * \brief Allocates a block of memory specified by the block size and return the pointer to it.
@@ -36,12 +36,12 @@ extern "C" {
  * \note
  * - None
  *
- * \param[in] block_size         Size of the block
+ * \param[in] blk_sz Size of the block
  *
  * \retval  Block Pointer  Memory allocation is successful
  * \retval  NULL           Memory allocation is not successful
  */
-LIBRARY_EXPORTS void *pal_os_malloc(uint32_t block_size);
+LIBRARY_EXPORTS void* pal_os_malloc(uint32_t blk_sz);
 
 /**
  * @brief Allocates a block of memory specified by the block size and return the pointer to it.
@@ -57,13 +57,13 @@ LIBRARY_EXPORTS void *pal_os_malloc(uint32_t block_size);
  * \note
  * - None
  *
- * \param[in] number_of_blocks      Number of block to allocate
- * \param[in] block_size            Size of the block
+ * \param[in] num_of_blk Number of block to allocate
+ * \param[in] blk_sz     Size of the block
  *
  * \retval  Block Pointer  Memory allocation is successful
  * \retval  NULL           Memory allocation is not successful
  */
-LIBRARY_EXPORTS void *pal_os_calloc(uint32_t number_of_blocks, uint32_t block_size);
+LIBRARY_EXPORTS void* pal_os_calloc(uint32_t num_of_blk, uint32_t blk_sz);
 
 /**
  * @brief Frees the block of memory specified by the block pointer.
@@ -79,10 +79,10 @@ LIBRARY_EXPORTS void *pal_os_calloc(uint32_t number_of_blocks, uint32_t block_si
  * \note
  * - None
  *
- * \param[in] block      Pointer to memory block to be freed
+ * \param[in] block Pointer to memory block to be freed
  *
  */
-LIBRARY_EXPORTS void pal_os_free(void *block);
+LIBRARY_EXPORTS void pal_os_free(void* block);
 
 /**
  * @brief Copies data from source to destination.
@@ -98,12 +98,12 @@ LIBRARY_EXPORTS void pal_os_free(void *block);
  * \note
  * - None
  *
- * \param[in] p_destination      Source to copy the data from
- * \param[in] p_source           Destination to copy the data to
- * \param[in] size               Size of the data to copy
+ * \param[in] dst Destination to copy the data to
+ * \param[in] src Source to copy the data from
+ * \param[in] sz  Size of the data to copy
  *
  */
-LIBRARY_EXPORTS void pal_os_memcpy(void *p_destination, const void *p_source, uint32_t size);
+LIBRARY_EXPORTS void pal_os_memcpy(void* dst, void const* src, uint32_t sz);
 
 /**
  * @brief Sets the buffer with the given value.
@@ -119,12 +119,12 @@ LIBRARY_EXPORTS void pal_os_memcpy(void *p_destination, const void *p_source, ui
  * \note
  * - None
  *
- * \param[in] p_buffer      Pointer to buffer
- * \param[in] value         Value to be set in the buffer
- * \param[in] size          Size of the buffer
+ * \param[in] buf Pointer to buffer
+ * \param[in] val Value to be set in the buffer
+ * \param[in] sz  Size of the buffer
  *
  */
-LIBRARY_EXPORTS void pal_os_memset(void *p_buffer, uint32_t value, uint32_t size);
+LIBRARY_EXPORTS void pal_os_memset(void* buf, uint32_t val, uint32_t sz);
 
 #ifdef __cplusplus
 }

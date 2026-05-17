@@ -20,15 +20,14 @@
 extern "C" {
 #endif
 
-#include "pal.h"
+#include "pal/pal.h"
 
 /**
  * \brief Structure defines the PAL GPIO configuration.
  */
 typedef struct pal_gpio {
     /// Pointer to GPIO platform specific context/structure
-    void *p_gpio_hw;
-
+    void* p_gpio_hw;
 } pal_gpio_t;
 
 /**
@@ -49,7 +48,7 @@ typedef struct pal_gpio {
  *
  *
  */
-LIBRARY_EXPORTS void pal_gpio_set_high(const pal_gpio_t *p_gpio_context);
+LIBRARY_EXPORTS void pal_gpio_set_high(pal_gpio_t const* p_gpio_context);
 
 /**
  * \brief Sets the GPIO pin to Low state.
@@ -68,7 +67,7 @@ LIBRARY_EXPORTS void pal_gpio_set_high(const pal_gpio_t *p_gpio_context);
  *\param[in] p_gpio_context      Valid pointer to PAL layer GPIO context
  *
  */
-LIBRARY_EXPORTS void pal_gpio_set_low(const pal_gpio_t *p_gpio_context);
+LIBRARY_EXPORTS void pal_gpio_set_low(pal_gpio_t const* p_gpio_context);
 
 /**
  * \brief Function to initialize GPIO.
@@ -88,7 +87,7 @@ LIBRARY_EXPORTS void pal_gpio_set_low(const pal_gpio_t *p_gpio_context);
  * \retval    #PAL_STATUS_FAILURE                    On failure
  *
  */
-LIBRARY_EXPORTS pal_status_t pal_gpio_init(const pal_gpio_t *p_gpio_context);
+LIBRARY_EXPORTS pal_status_t pal_gpio_init(pal_gpio_t const* p_gpio_context);
 
 /**
  * \brief Function to de-initialize GPIO.
@@ -107,7 +106,7 @@ LIBRARY_EXPORTS pal_status_t pal_gpio_init(const pal_gpio_t *p_gpio_context);
  * \retval    #PAL_STATUS_SUCCESS                    On successful execution
  * \retval    #PAL_STATUS_FAILURE                    On failure
  */
-LIBRARY_EXPORTS pal_status_t pal_gpio_deinit(const pal_gpio_t *p_gpio_context);
+LIBRARY_EXPORTS pal_status_t pal_gpio_deinit(pal_gpio_t const* p_gpio_context);
 
 #ifdef __cplusplus
 }

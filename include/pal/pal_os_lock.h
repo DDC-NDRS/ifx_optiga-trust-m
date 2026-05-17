@@ -20,7 +20,8 @@
 extern "C" {
 #endif
 
-#include "pal.h"
+#include "pal/pal.h"
+
 /**
  * @brief PAL OS lock structure .
  */
@@ -42,11 +43,11 @@ typedef struct pal_os_lock {
  * \note
  * - None
  *
- * \param[in] p_lock         Valid instance of #pal_os_lock_t.
- * \param[in] lock_type      Type of the lock.
+ * \param[in] lock Valid instance of #pal_os_lock_t.
+ * \param[in] type Type of the lock.
  *
  */
-void pal_os_lock_create(pal_os_lock_t *p_lock, uint8_t lock_type);
+void pal_os_lock_create(pal_os_lock_t* lock, uint8_t type);
 
 /**
  * \brief Deinitializes the lock.
@@ -61,10 +62,10 @@ void pal_os_lock_create(pal_os_lock_t *p_lock, uint8_t lock_type);
  * \note
  * - None
  *
- * \param[in] p_lock         Valid instance of #pal_os_lock_t.
+ * \param[in] lock Valid instance of #pal_os_lock_t.
  *
  */
-void pal_os_lock_destroy(pal_os_lock_t *p_lock);
+void pal_os_lock_destroy(pal_os_lock_t* lock);
 
 /**
  * \brief Acquires a lock.
@@ -79,10 +80,10 @@ void pal_os_lock_destroy(pal_os_lock_t *p_lock);
  * \note
  * - None
  *
- * \param[in] p_lock         Valid instance of #pal_os_lock_t.
+ * \param[in] lock Valid instance of #pal_os_lock_t.
  *
  */
-pal_status_t pal_os_lock_acquire(pal_os_lock_t *p_lock);
+pal_status_t pal_os_lock_acquire(pal_os_lock_t* lock);
 
 /**
  * \brief Releases the lock.
@@ -97,10 +98,10 @@ pal_status_t pal_os_lock_acquire(pal_os_lock_t *p_lock);
  * \note
  * - None
  *
- * \param[in] p_lock         Valid instance of #pal_os_lock_t.
+ * \param[in] lock Valid instance of #pal_os_lock_t.
  *
  */
-void pal_os_lock_release(pal_os_lock_t *p_lock);
+void pal_os_lock_release(pal_os_lock_t* lock);
 
 /**
  * \brief To enter critical section.

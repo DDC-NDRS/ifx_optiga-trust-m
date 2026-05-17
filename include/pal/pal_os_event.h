@@ -20,25 +20,30 @@
 extern "C" {
 #endif
 
-#include "optiga_lib_types.h"
+#include "common/optiga_lib_types.h"
 
 /**
  * \brief typedef for Callback function when timer elapses.
  */
-typedef void (*register_callback)(void *);
+typedef void (*register_callback)(void* arg);
 
 /** \brief PAL os event structure */
 typedef struct pal_os_event {
     /// context to be passed to callback
-    void *callback_ctx;
+    void* callback_ctx;
+
     /// os timer
-    void *os_timer;
+    void* os_timer;
+
     /// event triggered status
     bool_t is_event_triggered;
+
     /// Holds the next event timeout value in microseconds
     uint32_t timeout_us;
+
     /// To synchronize between events
     uint8_t sync_flag;
+
     /// registered callback
     register_callback callback_registered;
 } pal_os_event_t;
@@ -55,12 +60,11 @@ typedef struct pal_os_event {
  * \note
  * - None
  *
- * \param[in] callback                      Callback function to be registered internally
- * \param[in] callback_args                 Argument to be passed to registered callback
+ * \param[in] callback Callback function to be registered internally
+ * \param[in] arg      Argument to be passed to registered callback
  *
  */
-LIBRARY_EXPORTS pal_os_event_t *
-pal_os_event_create(register_callback callback, void *callback_args);
+LIBRARY_EXPORTS pal_os_event_t* pal_os_event_create(register_callback callback, void* arg);
 
 /**
  * \brief Destroys an os event.
@@ -74,10 +78,10 @@ pal_os_event_create(register_callback callback, void *callback_args);
  * \note
  * - None
  *
- * \param[in] pal_os_event                  pal_os_event to be destroyed
+ * \param[in] event pal_os_event to be destroyed
  *
  */
-LIBRARY_EXPORTS void pal_os_event_destroy(pal_os_event_t *pal_os_event);
+LIBRARY_EXPORTS void pal_os_event_destroy(pal_os_event_t* event);
 
 /**
  * \brief Callback registration function to trigger once when timer expires.
@@ -94,18 +98,14 @@ LIBRARY_EXPORTS void pal_os_event_destroy(pal_os_event_t *pal_os_event);
  * \note
  * - None
  *
- * \param[in] p_pal_os_event        Pointer to pal_os_event
- * \param[in] callback              Callback function pointer
- * \param[in] callback_args         Callback arguments
- * \param[in] time_us               time in micro seconds to trigger the call back
+ * \param[in] event    Pointer to pal_os_event
+ * \param[in] callback Callback function pointer
+ * \param[in] arg      Callback arguments
+ * \param[in] time_us  Time in microseconds to trigger the callback
  *
  */
-LIBRARY_EXPORTS void pal_os_event_register_callback_oneshot(
-    pal_os_event_t *p_pal_os_event,
-    register_callback callback,
-    void *callback_args,
-    uint32_t time_us
-);
+LIBRARY_EXPORTS void pal_os_event_register_callback_oneshot(pal_os_event_t* event, register_callback callback,
+                                                            void* arg, uint32_t time_us);
 
 /**
  * \brief Timer callback handler.
@@ -113,7 +113,8 @@ LIBRARY_EXPORTS void pal_os_event_register_callback_oneshot(
  * \details
  * Timer callback handler.
  *  - This gets called from the TIMER elapse event.
- *  - Once the timer expires, the registered callback function gets called from the timer event handler, if the call back is not NULL.
+ *  - Once the timer expires, the registered callback function gets called from the timer event handler, if the call
+ * back is not NULL.
  *
  * \pre
  * - None
@@ -136,13 +137,13 @@ void pal_os_event_trigger_registered_callback(void);
  * \note
  * - None
  *
- * \param[in] p_pal_os_event                Pointer to os event
- * \param[in] callback                      Callback function to be registered internally
- * \param[in] callback_args                 Arguement to be passed to registered callback
+ * \param[in] event    Pointer to os event
+ * \param[in] callback Callback function to be registered internally
+ * \param[in] arg      Argument to be passed to registered callback
  *
  */
-LIBRARY_EXPORTS void
-pal_os_event_start(pal_os_event_t *p_pal_os_event, register_callback callback, void *callback_args);
+LIBRARY_EXPORTS void pal_os_event_start(pal_os_event_t* event, register_callback callback,
+                                        void* arg);
 
 /**
  * \brief Stops an os event.
@@ -156,10 +157,10 @@ pal_os_event_start(pal_os_event_t *p_pal_os_event, register_callback callback, v
  * \note
  * - None
  *
- * \param[in] p_pal_os_event                Pointer to os event
+ * \param[in] event Pointer to os event
  *
  */
-LIBRARY_EXPORTS void pal_os_event_stop(pal_os_event_t *p_pal_os_event);
+LIBRARY_EXPORTS void pal_os_event_stop(pal_os_event_t* event);
 
 #ifdef __cplusplus
 }

@@ -20,13 +20,13 @@
 extern "C" {
 #endif
 
-#include "optiga_lib_types.h"
-#include "pal.h"
+#include "common/optiga_lib_types.h"
+#include "pal/pal.h"
 
 /** \brief PAL crypt context structure */
 typedef struct pal_crypt_t {
     /// callback
-    void *callback_ctx;
+    void* callback_ctx;
 } pal_crypt_t;
 
 /**
@@ -55,20 +55,15 @@ typedef struct pal_crypt_t {
  * \retval              PAL_STATUS_SUCCESS      In case of success
  * \retval              PAL_STATUS_FAILURE      In case of failure
  */
-LIBRARY_EXPORTS pal_status_t pal_crypt_tls_prf_sha256(
-    pal_crypt_t *p_pal_crypt,
-    const uint8_t *p_secret,
-    uint16_t secret_length,
-    const uint8_t *p_label,
-    uint16_t label_length,
-    const uint8_t *p_seed,
-    uint16_t seed_length,
-    uint8_t *p_derived_key,
-    uint16_t derived_key_length
-);
+LIBRARY_EXPORTS pal_status_t pal_crypt_tls_prf_sha256(pal_crypt_t* p_pal_crypt, uint8_t const* p_secret,
+                                                      uint16_t secret_length, uint8_t const* p_label,
+                                                      uint16_t label_length, uint8_t const* p_seed,
+                                                      uint16_t seed_length, uint8_t* p_derived_key,
+                                                      uint16_t derived_key_length);
 
 /**
- * \brief Encrypts the input plain text using AES CCM algorithm and provides the cipher text as well as MAC into output buffer.
+ * \brief Encrypts the input plain text using AES CCM algorithm and provides the cipher text as well as MAC into output
+ * buffer.
  *
  * \details
  * Encrypts the input plain text using AES CCM algorithm and provides the cipher text as well as MAC into output buffer.
@@ -90,23 +85,18 @@ LIBRARY_EXPORTS pal_status_t pal_crypt_tls_prf_sha256(
  * \param[in]           p_associated_data           Valid pointer to Associated data.
  * \param[in]           associated_data_length      Associated data size.
  * \param[in]           mac_size                    Length of expected MAC data.
- * \param[in,out]       p_cipher_text               Valid pointer to store cipher text and MAC output. Buffer length must be at-least <b>plain_text_length</b> + <b>MAC mac_size</b>.
+ * \param[in,out]       p_cipher_text               Valid pointer to store cipher text and MAC output. Buffer length
+ * must be at-least <b>plain_text_length</b> + <b>MAC mac_size</b>.
  *
  * \retval              PAL_STATUS_SUCCESS          In case of success
  * \retval              PAL_STATUS_FAILURE          In case of failure
  */
-LIBRARY_EXPORTS pal_status_t pal_crypt_encrypt_aes128_ccm(
-    pal_crypt_t *p_pal_crypt,
-    const uint8_t *p_plain_text,
-    uint16_t plain_text_length,
-    const uint8_t *p_encrypt_key,
-    const uint8_t *p_nonce,
-    uint16_t nonce_length,
-    const uint8_t *p_associated_data,
-    uint16_t associated_data_length,
-    uint8_t mac_size,
-    uint8_t *p_cipher_text
-);
+LIBRARY_EXPORTS pal_status_t pal_crypt_encrypt_aes128_ccm(pal_crypt_t* p_pal_crypt, uint8_t const* p_plain_text,
+                                                          uint16_t plain_text_length, uint8_t const* p_encrypt_key,
+                                                          uint8_t const* p_nonce, uint16_t nonce_length,
+                                                          uint8_t const* p_associated_data,
+                                                          uint16_t associated_data_length, uint8_t mac_size,
+                                                          uint8_t* p_cipher_text);
 
 /**
  * \brief Decrypts the cipher text using AES CCM algorithm and provides the plain text.
@@ -132,23 +122,18 @@ LIBRARY_EXPORTS pal_status_t pal_crypt_encrypt_aes128_ccm(
  * \param[in]           p_associated_data           Valid pointer to Associated data.
  * \param[in]           associated_data_length      Associated data size.
  * \param[in]           mac_size                    Length of MAC data.
- * \param[in,out]       p_plain_text                Valid pointer to store plain text. Buffer length must be at-least <b>Cipher_text_length</b> - <b>mac_size</b>.
+ * \param[in,out]       p_plain_text                Valid pointer to store plain text. Buffer length must be at-least
+ * <b>Cipher_text_length</b> - <b>mac_size</b>.
  *
  * \retval              PAL_STATUS_SUCCESS          In case of success
  * \retval              PAL_STATUS_FAILURE          In case of failure
  */
-LIBRARY_EXPORTS pal_status_t pal_crypt_decrypt_aes128_ccm(
-    pal_crypt_t *p_pal_crypt,
-    const uint8_t *p_cipher_text,
-    uint16_t cipher_text_length,
-    const uint8_t *p_decrypt_key,
-    const uint8_t *p_nonce,
-    uint16_t nonce_length,
-    const uint8_t *p_associated_data,
-    uint16_t associated_data_length,
-    uint8_t mac_size,
-    uint8_t *p_plain_text
-);
+LIBRARY_EXPORTS pal_status_t pal_crypt_decrypt_aes128_ccm(pal_crypt_t* p_pal_crypt, uint8_t const* p_cipher_text,
+                                                          uint16_t cipher_text_length, uint8_t const* p_decrypt_key,
+                                                          uint8_t const* p_nonce, uint16_t nonce_length,
+                                                          uint8_t const* p_associated_data,
+                                                          uint16_t associated_data_length, uint8_t mac_size,
+                                                          uint8_t* p_plain_text);
 
 /**
  * \brief Gets the external crypto library version number.
@@ -169,7 +154,7 @@ LIBRARY_EXPORTS pal_status_t pal_crypt_decrypt_aes128_ccm(
  * \retval           PAL_STATUS_SUCCESS                     In case of success
  * \retval           PAL_STATUS_FAILURE                     In case of failure
  */
-pal_status_t pal_crypt_version(uint8_t *p_crypt_lib_version_info, uint16_t *length);
+pal_status_t pal_crypt_version(uint8_t* p_crypt_lib_version_info, uint16_t* length);
 
 #ifdef __cplusplus
 }

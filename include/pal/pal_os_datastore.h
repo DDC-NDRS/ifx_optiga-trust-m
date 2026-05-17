@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#include "pal.h"
+#include "pal/pal.h"
 
 /// Identifier to store and read OPTIGA Platform Binding Shared secret on host platform
 #define OPTIGA_PLATFORM_BINDING_SHARED_SECRET_ID (0x11)
@@ -31,13 +31,13 @@ extern "C" {
 // Persistant data store is not configured
 #define OPTIGA_LIB_PAL_DATA_STORE_NOT_CONFIGURED (0x00)
 
-// !!!OPTIGA_LIB_PORTING_REQUIRED
+// OPTIGA_LIB_PORTING_REQUIRED
 // Identifier to store and read OPTIGA Shielded connection manage context on host platform,
 // If the manage context data is to be stored in volatile memory only,
 // set OPTIGA_COMMS_MANAGE_CONTEXT_ID to OPTIGA_LIB_PAL_DATA_STORE_NOT_CONFIGURED.
 #define OPTIGA_COMMS_MANAGE_CONTEXT_ID (0x22)
 
-// !!!OPTIGA_LIB_PORTING_REQUIRED
+// OPTIGA_LIB_PORTING_REQUIRED
 // Identifier to store and read OPTIGA application context handle on host platform,
 // If the application context data is to be stored in volatile memory only,
 // set OPTIGA_COMMS_MANAGE_CONTEXT_ID to OPTIGA_LIB_PAL_DATA_STORE_NOT_CONFIGURED.
@@ -46,6 +46,7 @@ extern "C" {
 /// @cond hidden
 /// Size of application context handle buffer
 #define APP_CONTEXT_SIZE (0x08)
+
 /// @endcond
 /**
  * \brief Reads data from the specified location for a given datastore_id.
@@ -61,15 +62,15 @@ extern "C" {
  * \note
  * - None
  *
- * \param[in]     datastore_id          Datastore id from where the data should be read.
- * \param[out]    p_buffer              Valid Pointer to output buffer
- * \param[in,out] p_buffer_length       Valid Pointer to the data buffer length to store the read data length. The input value gets updated with the actual length read from the data store.
+ * \param[in]     id    Datastore id from where the data should be read.
+ * \param[out]    buf   Valid Pointer to output buffer
+ * \param[in,out] p_len Valid Pointer to the data buffer length to store the read data length.
+ *                      The input value gets updated with the actual length read from the data store.
  *
- * \retval        #PAL_STATUS_SUCCESS   On successful execution
- * \retval        #PAL_STATUS_FAILURE   On failure
+ * \retval #PAL_STATUS_SUCCESS   On successful execution
+ * \retval #PAL_STATUS_FAILURE   On failure
  */
-pal_status_t
-pal_os_datastore_read(uint16_t datastore_id, uint8_t *p_buffer, uint16_t *p_buffer_length);
+pal_status_t pal_os_datastore_read(uint16_t id, uint8_t* buf, uint16_t* p_len);
 
 /**
  * \brief Writes data to the specified location for a given datastore_id
@@ -84,15 +85,14 @@ pal_os_datastore_read(uint16_t datastore_id, uint8_t *p_buffer, uint16_t *p_buff
  * \note
  * - None
  *
- * \param[in] datastore_id          Datastore id where the data should be written.
- * \param[in] p_buffer              Valid pointer to the input buffer
- * \param[in] length                Length of the data to be written
+ * \param[in] id  Datastore id where the data should be written.
+ * \param[in] buf Valid pointer to the input buffer
+ * \param[in] len Length of the data to be written
  *
- * \retval    #PAL_STATUS_SUCCESS   On successful execution
- * \retval    #PAL_STATUS_FAILURE   On failure
+ * \retval #PAL_STATUS_SUCCESS   On successful execution
+ * \retval #PAL_STATUS_FAILURE   On failure
  */
-pal_status_t
-pal_os_datastore_write(uint16_t datastore_id, const uint8_t *p_buffer, uint16_t length);
+pal_status_t pal_os_datastore_write(uint16_t id, uint8_t const* buf, uint16_t len);
 
 #ifdef __cplusplus
 }

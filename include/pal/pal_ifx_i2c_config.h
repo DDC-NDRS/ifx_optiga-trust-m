@@ -20,12 +20,12 @@
 extern "C" {
 #endif
 
-#include "pal.h"
-#include "pal_gpio.h"
-#include "pal_i2c.h"
-#include "pal_os_datastore.h"
+#include "pal/pal.h"
+#include "pal/pal_gpio.h"
+#include "pal/pal_i2c.h"
+#include "pal/pal_os_datastore.h"
 
-extern pal_i2c_t optiga_pal_i2c_context_0;
+extern pal_i2c_t  optiga_pal_i2c_context_0;
 extern pal_gpio_t optiga_vdd_0;
 extern pal_gpio_t optiga_reset_0;
 
