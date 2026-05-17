@@ -13,11 +13,11 @@
  * @{
  */
 
-#include "pal_os_timer.h"
+#include "pal/pal_os_timer.h"
 
 #include <zephyr/kernel.h>
 
-#include "pal.h"
+#include "pal/pal.h"
 
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 uint32_t pal_os_timer_get_time_in_microseconds(void) {
@@ -31,12 +31,12 @@ uint32_t pal_os_timer_get_time_in_milliseconds(void) {
 void pal_os_timer_delay_in_milliseconds(uint16_t milliseconds) {
     k_sleep(K_MSEC(milliseconds));
 }
-// NOLINTEND(readability-function-cognitive-complexity)
 
+// NOLINTEND(readability-function-cognitive-complexity)
 pal_status_t pal_timer_init(void) {
-    return PAL_STATUS_SUCCESS;
+    return (PAL_STATUS_SUCCESS);
 }
 
 pal_status_t pal_timer_deinit(void) {
-    return PAL_STATUS_SUCCESS;
+    return (PAL_STATUS_SUCCESS);
 }

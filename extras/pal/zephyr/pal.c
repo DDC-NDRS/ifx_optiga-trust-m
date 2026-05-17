@@ -13,11 +13,11 @@
  * @{
  */
 
-#include "pal.h"
+#include "pal/pal.h"
 
-#include "pal_gpio.h"
-#include "pal_logger.h"
-#include "pal_os_timer.h"
+#include "pal/pal_gpio.h"
+#include "pal/pal_logger.h"
+#include "pal/pal_os_timer.h"
 
 extern pal_gpio_t optiga_vdd_0;
 extern pal_gpio_t optiga_reset_0;

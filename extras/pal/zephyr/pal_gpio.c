@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "pal_gpio.h"
+#include "pal/pal_gpio.h"
 
 #include <zephyr/drivers/gpio.h>
 
-#include "pal.h"
+#include "pal/pal.h"
 
 pal_status_t pal_gpio_init(pal_gpio_t const* p_gpio_context) {
     if ((p_gpio_context != NULL) && (p_gpio_context->p_gpio_hw != NULL)) {

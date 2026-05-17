@@ -13,27 +13,35 @@
  * @{
  */
 
-#include "pal_os_memory.h"
+#include "pal/pal_os_memory.h"
 
 #include <zephyr/kernel.h>
 
-void *pal_os_malloc(uint32_t block_size) {
-    return (k_malloc(block_size));
+void* pal_os_malloc(uint32_t blk_sz) {
+    void* ret;
+
+    ret = k_malloc(blk_sz);
+
+    return (ret);
 }
 
-void *pal_os_calloc(uint32_t number_of_blocks, uint32_t block_size) {
-    return (k_calloc(number_of_blocks, block_size));
+void* pal_os_calloc(uint32_t num_of_blk, uint32_t blk_sz) {
+    void* ret;
+
+    ret = k_calloc(num_of_blk, blk_sz);
+
+    return (ret);
 }
 
-void pal_os_free(void *p_block) {
-    k_free(p_block);
+void pal_os_free(void* block) {
+    k_free(block);
 }
 
-void pal_os_memcpy(void *p_destination, const void *p_source, uint32_t size) {
+void pal_os_memcpy(void* dst, void const* src, uint32_t sz) {
     // flawfinder: ignore
-    memcpy(p_destination, p_source, size);
+    memcpy(dst, src, sz);
 }
 
-void pal_os_memset(void *p_buffer, uint32_t value, uint32_t size) {
-    memset(p_buffer, (int32_t)value, size);
+void pal_os_memset(void* buf, uint32_t val, uint32_t sz) {
+    memset(buf, (int32_t)val, sz);
 }
