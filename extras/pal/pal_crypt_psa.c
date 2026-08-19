@@ -32,7 +32,7 @@
 #include "pal_os_memory.h"
 
 #define PAL_CRYPT_MAX_LABEL_SEED_LENGTH (96U)
-#define PAL_CRYPT_AES128_KEY_BYTES (16U)
+#define PAL_CRYPT_AES128_KEY_BYTES      (16U)
 
 /* PSA crypto initialization is performed exactly once across all threads. */
 #ifdef __ZEPHYR__
@@ -43,7 +43,8 @@ static psa_status_t pal_psa_init_once(void) {
     if (!atomic_test_and_set_bit(&pal_psa_init_flag, 0)) {
         pal_psa_init_status = psa_crypto_init();
     }
-    return pal_psa_init_status;
+
+    return (pal_psa_init_status);
 }
 #elif defined(NO_PTHREAD) || defined(BARE_METAL)
 static psa_status_t pal_psa_init_once(void) {
@@ -56,35 +57,35 @@ static psa_status_t pal_psa_init_once(void) {
             pal_psa_initialized = true;
         }
     }
-    return pal_psa_init_status;
+
+    return (pal_psa_init_status);
 }
 #else
 static pthread_once_t pal_psa_init_once_ctl = PTHREAD_ONCE_INIT;
-static psa_status_t pal_psa_init_status = PSA_ERROR_BAD_STATE;
+static psa_status_t   pal_psa_init_status   = PSA_ERROR_BAD_STATE;
 
 static void pal_psa_do_init(void) {
     pal_psa_init_status = psa_crypto_init();
 }
 
 static psa_status_t pal_psa_init_once(void) {
-    (void)pthread_once(&pal_psa_init_once_ctl, pal_psa_do_init);
-    return pal_psa_init_status;
+    (void) pthread_once(&pal_psa_init_once_ctl, pal_psa_do_init);
+    return (pal_psa_init_status);
 }
 #endif
 
 // lint --e{818, 715, 830} suppress "argument \"p_pal_crypt\" is not used in the implementation but kept for future use"
 pal_status_t pal_crypt_tls_prf_sha256(
-    pal_crypt_t *p_pal_crypt,
-    const uint8_t *p_secret,
+    pal_crypt_t* p_pal_crypt,
+    uint8_t const* p_secret,
     uint16_t secret_length,
-    const uint8_t *p_label,
+    uint8_t const* p_label,
     uint16_t label_length,
-    const uint8_t *p_seed,
+    uint8_t const* p_seed,
     uint16_t seed_length,
-    uint8_t *p_derived_key,
-    uint16_t derived_key_length
-) {
-    (void)p_pal_crypt;
+    uint8_t* p_derived_key,
+    uint16_t derived_key_length) {
+    (void) p_pal_crypt;
 
     pal_status_t return_value = PAL_STATUS_FAILURE;
     psa_status_t st;
@@ -93,12 +94,13 @@ pal_status_t pal_crypt_tls_prf_sha256(
     bool key_imported = false;
     psa_algorithm_t alg = PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256);
     psa_key_derivation_operation_t operation = PSA_KEY_DERIVATION_OPERATION_INIT;
+
     do {
-#ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
+        #ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
         if (p_secret == NULL || p_label == NULL || p_seed == NULL || p_derived_key == NULL) {
             break;
         }
-#endif  // OPTIGA_LIB_DEBUG_NULL_CHECK
+        #endif // OPTIGA_LIB_DEBUG_NULL_CHECK
 
         if (pal_psa_init_once() != PSA_SUCCESS) {
             break;
@@ -107,6 +109,7 @@ pal_status_t pal_crypt_tls_prf_sha256(
         if ((uint32_t)label_length + (uint32_t)seed_length > PAL_CRYPT_MAX_LABEL_SEED_LENGTH) {
             break;
         }
+
         /* Import the key */
         psa_set_key_usage_flags(&attr, PSA_KEY_USAGE_DERIVE);
         psa_set_key_algorithm(&attr, alg);
@@ -123,38 +126,39 @@ pal_status_t pal_crypt_tls_prf_sha256(
         if (st != PSA_SUCCESS) {
             break;
         }
+
         st = psa_key_derivation_set_capacity(&operation, derived_key_length);
         if (st != PSA_SUCCESS) {
             break;
         }
-        st = psa_key_derivation_input_bytes(
-            &operation,
-            PSA_KEY_DERIVATION_INPUT_SEED,
-            p_seed,
-            seed_length
-        );
+
+        st = psa_key_derivation_input_bytes(&operation,
+                                            PSA_KEY_DERIVATION_INPUT_SEED,
+                                            p_seed,
+                                            seed_length);
         if (st != PSA_SUCCESS) {
             break;
         }
+
         st = psa_key_derivation_input_key(&operation, PSA_KEY_DERIVATION_INPUT_SECRET, key_id);
         if (st != PSA_SUCCESS) {
             break;
         }
-        st = psa_key_derivation_input_bytes(
-            &operation,
-            PSA_KEY_DERIVATION_INPUT_LABEL,
-            p_label,
-            label_length
-        );
+
+        st = psa_key_derivation_input_bytes(&operation,
+                                            PSA_KEY_DERIVATION_INPUT_LABEL,
+                                            p_label,
+                                            label_length);
         if (st != PSA_SUCCESS) {
             break;
         }
+
         st = psa_key_derivation_output_bytes(&operation, p_derived_key, derived_key_length);
         if (st != PSA_SUCCESS) {
             break;
         }
-        return_value = PAL_STATUS_SUCCESS;
 
+        return_value = PAL_STATUS_SUCCESS;
     } while (FALSE);
 
     /* Clean up */
@@ -168,23 +172,22 @@ pal_status_t pal_crypt_tls_prf_sha256(
         pal_os_memset(p_derived_key, 0, derived_key_length);
     }
 
-    return return_value;
+    return (return_value);
 }
 
 // lint --e{818, 715, 830} suppress "argument \"p_pal_crypt\" is not used in the implementation but kept for future use"
 pal_status_t pal_crypt_encrypt_aes128_ccm(
-    pal_crypt_t *p_pal_crypt,
-    const uint8_t *p_plain_text,
+    pal_crypt_t* p_pal_crypt,
+    uint8_t const* p_plain_text,
     uint16_t plain_text_length,
-    const uint8_t *p_encrypt_key,
-    const uint8_t *p_nonce,
+    uint8_t const* p_encrypt_key,
+    uint8_t const* p_nonce,
     uint16_t nonce_length,
-    const uint8_t *p_associated_data,
+    uint8_t const* p_associated_data,
     uint16_t associated_data_length,
     uint8_t mac_size,
-    uint8_t *p_cipher_text
-) {
-    (void)p_pal_crypt;
+    uint8_t* p_cipher_text) {
+    (void) p_pal_crypt;
 
     pal_status_t return_value = PAL_STATUS_FAILURE;
     psa_status_t st;
@@ -194,12 +197,12 @@ pal_status_t pal_crypt_encrypt_aes128_ccm(
     size_t out_len = 0;
 
     do {
-#ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
-        if (p_plain_text == NULL || p_encrypt_key == NULL || p_nonce == NULL
-            || p_associated_data == NULL || p_cipher_text == NULL) {
+        #ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
+        if ((p_plain_text == NULL) || (p_encrypt_key == NULL) || (p_nonce == NULL) ||
+            (p_associated_data == NULL) || (p_cipher_text == NULL)) {
             break;
         }
-#endif  // OPTIGA_LIB_DEBUG_NULL_CHECK
+        #endif // OPTIGA_LIB_DEBUG_NULL_CHECK
 
         if (pal_psa_init_once() != PSA_SUCCESS) {
             break;
@@ -219,44 +222,42 @@ pal_status_t pal_crypt_encrypt_aes128_ccm(
         key_imported = true;
 
         /* Output layout expected by the caller: ciphertext || tag */
-        st = psa_aead_encrypt(
-            key_id,
-            PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, mac_size),
-            p_nonce,
-            nonce_length,
-            p_associated_data,
-            associated_data_length,
-            p_plain_text,
-            plain_text_length,
-            p_cipher_text,
-            (size_t)plain_text_length + mac_size,
-            &out_len
-        );
-        if (st == PSA_SUCCESS && out_len == (size_t)plain_text_length + mac_size) {
+        st = psa_aead_encrypt(key_id,
+                              PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, mac_size),
+                              p_nonce,
+                              nonce_length,
+                              p_associated_data,
+                              associated_data_length,
+                              p_plain_text,
+                              plain_text_length,
+                              p_cipher_text,
+                              (size_t)plain_text_length + mac_size,
+                              &out_len);
+        if ((st == PSA_SUCCESS) && (out_len == ((size_t)plain_text_length + mac_size))) {
             return_value = PAL_STATUS_SUCCESS;
         }
     } while (FALSE);
+
     if (key_imported) {
         (void)psa_destroy_key(key_id);
     }
 
-    return return_value;
+    return (return_value);
 }
 
 // lint --e{818, 715, 830} suppress "argument \"p_pal_crypt\" is not used in the implementation but kept for future use"
 pal_status_t pal_crypt_decrypt_aes128_ccm(
-    pal_crypt_t *p_pal_crypt,
-    const uint8_t *p_cipher_text,
+    pal_crypt_t* p_pal_crypt,
+    uint8_t const* p_cipher_text,
     uint16_t cipher_text_length,
-    const uint8_t *p_decrypt_key,
-    const uint8_t *p_nonce,
+    uint8_t const* p_decrypt_key,
+    uint8_t const* p_nonce,
     uint16_t nonce_length,
-    const uint8_t *p_associated_data,
+    uint8_t const* p_associated_data,
     uint16_t associated_data_length,
     uint8_t mac_size,
-    uint8_t *p_plain_text
-) {
-    (void)p_pal_crypt;
+    uint8_t* p_plain_text) {
+    (void) p_pal_crypt;
 
     pal_status_t return_value = PAL_STATUS_FAILURE;
     psa_status_t st;
@@ -266,12 +267,12 @@ pal_status_t pal_crypt_decrypt_aes128_ccm(
     size_t out_len = 0;
 
     do {
-#ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
-        if (p_cipher_text == NULL || p_decrypt_key == NULL || p_nonce == NULL
-            || p_associated_data == NULL || p_plain_text == NULL) {
+        #ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
+        if ((p_cipher_text == NULL) || (p_decrypt_key == NULL) || (p_nonce == NULL) ||
+            (p_associated_data == NULL) || (p_plain_text == NULL)) {
             break;
         }
-#endif  // OPTIGA_LIB_DEBUG_NULL_CHECK
+        #endif // OPTIGA_LIB_DEBUG_NULL_CHECK
 
         if (cipher_text_length < mac_size) {
             break;
@@ -294,51 +295,49 @@ pal_status_t pal_crypt_decrypt_aes128_ccm(
         }
         key_imported = true;
 
-        st = psa_aead_decrypt(
-            key_id,
-            PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, mac_size),
-            p_nonce,
-            nonce_length,
-            p_associated_data,
-            associated_data_length,
-            p_cipher_text,
-            cipher_text_length,
-            p_plain_text,
-            (size_t)cipher_text_length - mac_size,
-            &out_len
-        );
-        if (st == PSA_SUCCESS && out_len == (size_t)cipher_text_length - mac_size) {
+        st = psa_aead_decrypt(key_id,
+                              PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, mac_size),
+                              p_nonce,
+                              nonce_length,
+                              p_associated_data,
+                              associated_data_length,
+                              p_cipher_text,
+                              cipher_text_length,
+                              p_plain_text,
+                              (size_t)cipher_text_length - mac_size,
+                              &out_len);
+        if ((st == PSA_SUCCESS) && (out_len == ((size_t)cipher_text_length - mac_size))) {
             return_value = PAL_STATUS_SUCCESS;
         }
     } while (FALSE);
 
     if (key_imported) {
-        (void)psa_destroy_key(key_id);
+        (void) psa_destroy_key(key_id);
     }
 
-    return return_value;
+    return (return_value);
 }
 
-pal_status_t pal_crypt_version(uint8_t *p_crypt_lib_version_info, uint16_t *length) {
-    const char *v = TF_PSA_CRYPTO_VERSION_STRING_FULL;
+pal_status_t pal_crypt_version(uint8_t* p_crypt_lib_version_info, uint16_t* length) {
+    char const* v = TF_PSA_CRYPTO_VERSION_STRING_FULL;
     size_t vlen;
 
-#ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
-    if (p_crypt_lib_version_info == NULL || length == NULL) {
-        return PAL_STATUS_INVALID_INPUT;
+    #ifdef OPTIGA_LIB_DEBUG_NULL_CHECK
+    if ((p_crypt_lib_version_info == NULL) || (length == NULL)) {
+        return (PAL_STATUS_INVALID_INPUT);
     }
-#endif  // OPTIGA_LIB_DEBUG_NULL_CHECK
+    #endif // OPTIGA_LIB_DEBUG_NULL_CHECK
 
     vlen = strlen(v);
-    if (vlen + 1U > (size_t)*length) {
-        return PAL_STATUS_FAILURE;
+    if ((vlen + 1U) > (size_t)*length) {
+        return (PAL_STATUS_FAILURE);
     }
 
     pal_os_memcpy(p_crypt_lib_version_info, v, vlen);
     p_crypt_lib_version_info[vlen] = (uint8_t)'\0';
     *length = (uint16_t)vlen;
 
-    return PAL_STATUS_SUCCESS;
+    return (PAL_STATUS_SUCCESS);
 }
 
 /**
