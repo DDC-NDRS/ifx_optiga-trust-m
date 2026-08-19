@@ -16,7 +16,13 @@
  */
 
 #include <psa/crypto.h>
+#ifdef __ZEPHYR__
+#include <zephyr/sys/atomic.h>
+#elif defined(NO_PTHREAD) || defined(BARE_METAL)
+/* Bare-metal / single-threaded environment */
+#else
 #include <pthread.h>
+#endif
 #include <stdbool.h>
 #include <string.h>
 #include <tf-psa-crypto/build_info.h>
@@ -29,6 +35,30 @@
 #define PAL_CRYPT_AES128_KEY_BYTES (16U)
 
 /* PSA crypto initialization is performed exactly once across all threads. */
+#ifdef __ZEPHYR__
+static atomic_t pal_psa_init_flag = ATOMIC_INIT(0);
+static psa_status_t pal_psa_init_status = PSA_ERROR_BAD_STATE;
+
+static psa_status_t pal_psa_init_once(void) {
+    if (!atomic_test_and_set_bit(&pal_psa_init_flag, 0)) {
+        pal_psa_init_status = psa_crypto_init();
+    }
+    return pal_psa_init_status;
+}
+#elif defined(NO_PTHREAD) || defined(BARE_METAL)
+static psa_status_t pal_psa_init_once(void) {
+    static bool pal_psa_initialized = false;
+    static psa_status_t pal_psa_init_status = PSA_ERROR_BAD_STATE;
+
+    if (!pal_psa_initialized) {
+        pal_psa_init_status = psa_crypto_init();
+        if (pal_psa_init_status == PSA_SUCCESS) {
+            pal_psa_initialized = true;
+        }
+    }
+    return pal_psa_init_status;
+}
+#else
 static pthread_once_t pal_psa_init_once_ctl = PTHREAD_ONCE_INIT;
 static psa_status_t pal_psa_init_status = PSA_ERROR_BAD_STATE;
 
@@ -40,6 +70,7 @@ static psa_status_t pal_psa_init_once(void) {
     (void)pthread_once(&pal_psa_init_once_ctl, pal_psa_do_init);
     return pal_psa_init_status;
 }
+#endif
 
 // lint --e{818, 715, 830} suppress "argument \"p_pal_crypt\" is not used in the implementation but kept for future use"
 pal_status_t pal_crypt_tls_prf_sha256(
