@@ -23,10 +23,11 @@
 #include "pal/pal_os_datastore.h"
 
 // Reserved sizes for persistent data buffer
-/// Size of length field
+// Size of length field
 #define LENGTH_SIZE (0x02)
-/// Size of data store buffer to hold the shielded connection manage context information
-/// (2 bytes length field + 64(0x40) bytes context)
+
+// Size of data store buffer to hold the shielded connection manage context information
+// (2 bytes length field + 64(0x40) bytes context)
 #define MANAGE_CONTEXT_BUFFER_SIZE (0x42)
 
 #define MANAGE_CONTEXT_BUFFER_OFFSET (0x10)
@@ -54,8 +55,8 @@
 
 // Calculate optimal size of page buffer: Some platforms can write individual words, others support only larger blocks
 // (e.g. 512 bytes) Buffer size = MAX(OPTIGA_NVM_DATA_LENGTH, FLASH_WRITE_BLOCK_SIZE)
-#define FLASH_PAGE_BUFFER_SIZE                                          \
-    (OPTIGA_NVM_DATA_LENGTH > FLASH_WRITE_BLOCK_SIZE                    \
+#define FLASH_PAGE_BUFFER_SIZE                                  \
+    (OPTIGA_NVM_DATA_LENGTH > FLASH_WRITE_BLOCK_SIZE            \
          ? (((OPTIGA_NVM_DATA_LENGTH % FLASH_WRITE_BLOCK_SIZE) == 0)    \
                 ? /* Platform supports small writes, find optimal buffer size as multiple of write size */ \
                 OPTIGA_NVM_DATA_LENGTH                                  \
@@ -67,7 +68,7 @@ uint8_t p_page_buffer[FLASH_PAGE_BUFFER_SIZE];
 
 // Magic pattern to identify valid NVM sections
 static uint8_t OPTIGA_MEMORY_ID[] = "OPTIGA"; // NOLINT
-static off_t page_offset;
+static off_t   page_offset;
 
 static pal_status_t prepare_storage_page(void) {
     const struct device* flash_dev = TEST_PARTITION_DEVICE;
@@ -128,7 +129,7 @@ pal_status_t pal_os_datastore_init(void) {
     const struct device* flash_dev = TEST_PARTITION_DEVICE;
     struct flash_pages_info flash_info;
 
-    if (flash_get_page_count(flash_dev) < PAGE_IDX) {
+    if (flash_get_page_count(flash_dev) <= PAGE_IDX) {
         return (PAL_STATUS_FAILURE);
     }
 
