@@ -247,13 +247,13 @@ optiga_lib_status_t optiga_comms_transceive(
     uint8_t failure_status[] = {0xff, 0xff};
     uint8_t max_transmit_frame[MAX_TRANSMIT_FRAME_SIZE];
     uint16_t crc16 = 0x0000;
-    ;
     uint8_t start_seq[] = {0xbe, 0xef, 0xde, 0xad};
+    uint16_t rx_buffer_capacity = *p_rx_data_len;
 
     /*
-	 * The communication protocol is pretty straightforward
-	 * Start Sequence 4 bytes [0xbeefdead] + Length 2 bytes [nnnn] + actual packet with nnnn bytes [xxx ... xxxx] + crc16 2 bytes
-	 */
+     * The communication protocol is pretty straightforward
+     * Start Sequence 4 bytes [0xbeefdead] + Length 2 bytes [nnnn] + actual packet with nnnn bytes [xxx ... xxxx] + crc16 2 bytes
+     */
 
     do {
         // Prepare the Start sequence
@@ -309,6 +309,12 @@ optiga_lib_status_t optiga_comms_transceive(
         } else {
             if (*p_rx_data_len > (MAX_TRANSMIT_FRAME_SIZE - 8)) {
                 printf("Receive error. Frame too big %02X\n", *p_rx_data_len);
+                break;
+            }
+
+            // reject a wire-supplied length exceeding the caller's real destination buffer capacity
+            if (*p_rx_data_len > rx_buffer_capacity) {
+                printf("Receive error. Frame exceeds destination buffer %02X\n", *p_rx_data_len);
                 break;
             }
 
